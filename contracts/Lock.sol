@@ -8,13 +8,15 @@ contract Lock {
     uint256 public lockerCount;
     uint256 public totalLocked;
     mapping(address => uint256) public lockers;
+    mapping(address => uint256) public deadline;
 
     constructor(address tokenAddress) {
         Token = BEEToken(tokenAddress);
     }
 
-    function lockTokens(uint256 amount) external {
+    function lockTokens(uint256 amount, uint256 time) external {
         require(amount > 0, "Token amount must be bigger than 0.");
+        require(time > 0, "Locking time must be bigger than 0.");
 
         // This 2 require function already inside the ERC20 contract. So we don't need to write them.
         // require(Token.balanceOf(msg.sender) >= amount, "Insufficient balance.");
@@ -23,6 +25,7 @@ contract Lock {
         if (!(lockers[msg.sender] > 0)) lockerCount++;
         totalLocked += amount;
         lockers[msg.sender] += amount;
+        deadline[msg.sender] = block.timestamp + time;
 
         bool ok = Token.transferFrom(msg.sender, address(this), amount);
         require(ok, "Transfer failed.");
@@ -30,8 +33,11 @@ contract Lock {
 
     function withdrawTokens() external {
         require(lockers[msg.sender] > 0, "Not enough token.");
+        require(block.timestamp >= deadline[msg.sender], "Deadline is not over.");
+
         uint256 amount = lockers[msg.sender];
         delete(lockers[msg.sender]);
+        delete(deadline[msg.sender]);
         totalLocked -= amount;
         lockerCount--;
 
