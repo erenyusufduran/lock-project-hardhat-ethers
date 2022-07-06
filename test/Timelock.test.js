@@ -103,8 +103,5 @@ describe("Timelock", function () {
       expect(newTimeStamp).to.be.greaterThan(timestamp);
       console.log("Timestamps: ", timestamp, newTimeStamp);
     });
-    it("", async function () {});
-    it("", async function () {});
-    it("", async function () {});
   });
 });

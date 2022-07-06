@@ -2,6 +2,7 @@
 pragma solidity ^0.8.2;
 
 import "./Token.sol";
+import "hardhat/console.sol";
 
 contract Lock {
     BEEToken Token;
@@ -36,6 +37,8 @@ contract Lock {
         require(block.timestamp >= deadline[msg.sender], "Deadline is not over.");
 
         uint256 amount = lockers[msg.sender];
+        console.log("<><><>",msg.sender,amount);
+
         delete(lockers[msg.sender]);
         delete(deadline[msg.sender]);
         totalLocked -= amount;
